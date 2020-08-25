@@ -1,0 +1,73 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/riskcontrolcenter?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&allowMultiQueries=true
+    username: root
+    password: Brc@1234
+    hikari:
+      poolName: Hikari
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  application:
+    name: sharding-seata-proxy-demo
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: tx_group
+  #enable-auto-data-source-proxy: true
+  #use-jdk-proxy: false
+  client:
+    rm:
+      async-commit-buffer-limit: 1000
+      report-retry-count: 5
+      table-meta-check-enable: false
+      report-success-enable: false
+      lock:
+        retry-interval: 10
+        retry-times: 30
+        retry-policy-branch-rollback-on-conflict: true
+    tm:
+      commit-retry-count: 5
+      rollback-retry-count: 5
+    undo:
+      data-validation: true
+      log-serialization: jackson
+      log-table: undo_log
+    log:
+      exceptionRate: 100
+  service:
+    vgroup-mapping:
+      tx_group: seataService
+    #enable-degrade: false
+    #disable-global-transaction: false
+  transport:
+    shutdown:
+      wait: 3
+    thread-factory:
+      boss-thread-prefix: NettyBoss
+      worker-thread-prefix: NettyServerNIOWorker
+      server-executor-thread-prefix: NettyServerBizHandler
+      share-boss-worker: false
+      client-selector-thread-prefix: NettyClientSelector
+      client-selector-thread-size: 1
+      client-worker-thread-prefix: NettyClientWorkerThread
+      worker-thread-size: default
+      boss-thread-size: 1
+    type: TCP
+    server: NIO
+    heartbeat: true
+    serialization: seata
+    compressor: none
+    enable-client-batch-send-request: true
+  config:
+    type: file
+  registry:
+    type: redis
+
